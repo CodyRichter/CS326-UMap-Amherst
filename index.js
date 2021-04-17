@@ -32,6 +32,61 @@ app
   .get("/", function (req, res) {
     res.sendFile(path.join(__dirname + "/index.html"));
   })
+  // For getting all login information
+  .get("/login", async (req, res) => 
+  {
+    try 
+    {
+      pool.query("SELECT * FROM login", (error, result) => 
+      {
+        if (error) 
+        {
+          res.sendStatus(404);
+        } 
+        else 
+        {
+          const results = 
+          { 
+            results: result ? result.rows : null 
+          };
+          res.send(JSON.stringify(results));
+        }
+      });
+    } 
+    catch (error) 
+    {
+      console.error(error);
+      res.send("Error " + error);
+    }
+  })
+  // For getting all user login informaton
+  .get("/userlogin", async (req, res) => 
+  {
+    try 
+    {
+      pool.query("SELECT * FROM userlogin WHERE userID = " + req.query.userID,
+      (error, result) => 
+      {
+        if (error) 
+        {
+          res.sendStatus(404);
+        } 
+        else 
+        {
+          const results = 
+          { 
+            results: result ? result.rows : null 
+          };
+          res.send(JSON.stringify(results));
+        }
+      });
+    } 
+    catch (error) 
+    {
+      console.error(error);
+      res.send("Error " + error);
+    }
+  })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {
     try {

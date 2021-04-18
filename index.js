@@ -87,6 +87,55 @@ app
       res.send("Error " + error);
     }
   })
+  // For posting all user login information
+  .post("/savelogin", (req, res) => 
+  {
+    try 
+    {
+      pool.query(
+        "DELETE FROM userlogin where userID = " + req.body.userID,
+        (error, result) => 
+        {
+          if (error) 
+          {
+            res.sendStatus(404);
+          } 
+          else 
+          {
+            let additionalSQL = "";
+
+            for (let rowNum in req.body.rows) 
+            {
+              let row = req.body.rows[rowNum];
+              additionalSQL += "(" + req.body.userID + ", '" + row.firstName + ", '" + row.lastName + ", '" + row.major + ", '" + row.emailAddress + ", '" + row.password + "'),";
+            }
+
+            additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
+
+            let totalSQL = "INSERT INTO userlogin (userID, firstName, lastName, major, emailAddress, password) VALUES " + additionalSQL;
+
+            pool.query(totalSQL, (error, result) => 
+            {
+              if (error) 
+              {
+                console.log(error);
+                res.sendStatus(404);
+              } 
+              else 
+              {
+                res.sendStatus(200);
+              }
+            });
+          }
+        }
+      );
+    } 
+    catch (error) 
+    {
+      console.error(error);
+      res.send("Error " + error);
+    }
+  })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {
     try {

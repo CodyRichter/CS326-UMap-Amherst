@@ -39,7 +39,7 @@ app
       try {
         let result = await pool.query(
           "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + req.query.userID);
-          userClasses = result ? result.rows : []
+          userClasses = result ? result.rows : [];
       } catch (err) {}  // For now no need to handle error
 
       // Get a list of all user pitstops

@@ -120,24 +120,15 @@ app
   // For getting all login information
   .get("/users", async (req, res) => {
     try {
-      pool.query("SELECT * FROM users", (error, result) => 
-      {
-        if (err) 
-        {
+      pool.query("SELECT * FROM users", (err, result) => {
+        if (err) {
           res.sendStatus(404);
-        }
-        else 
-        {
-          const results =
-          {
-            results: result ? result.rows : null
-          };
+        } else {
+          const results = { results: result ? result.rows : null };
           res.send(JSON.stringify(results));
         }
       });
-    }
-    catch (err) 
-    {
+    } catch (err) {
       console.error(err);
       res.send("Error " + err);
     }

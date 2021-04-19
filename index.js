@@ -38,7 +38,7 @@ app
       // Get a list of all user classes
       try {
         let result = await pool.query(
-          "SELECT classes.name, buildings.name, room, time, monday, tuesday, wednesday, thursday, friday FROM (classes INNER JOIN userclasses on classes.id = userclasses.class) INNER JOIN buildings on classes.building = buildings.id WHERE userid = " + req.query.userID);
+          "SELECT classes.name className, buildings.name buildingName, room, time, monday, tuesday, wednesday, thursday, friday FROM (classes INNER JOIN userclasses on classes.id = userclasses.class) INNER JOIN buildings on classes.building = buildings.id WHERE userid = " + req.query.userID);
           userClasses = result ? result.rows : [];
       } catch (err) {}  // For now no need to handle error
 

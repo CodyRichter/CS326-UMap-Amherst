@@ -51,6 +51,9 @@ module.exports = {
     // Helper function for main method. Will parse all of a user's classes and return a sorted
     // list of the classes which still are upcoming today.
     parseUpcomingClasses: function (classes) {
+
+        classes = getClassesToday(classes); // Only work on classes today
+
         let currentTime = new Date();  // Get current datetime
         currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
 
@@ -77,14 +80,7 @@ module.exports = {
     // list of all of the stops which are upcoming today.
     parseUpcomingStops: function (stops) {
 
-        // NOTE: This day map is flipped compared to the class one.
-        let dayMap = {
-            Monday: 1,
-            Tuesday: 2,
-            Wednesday: 3,
-            Thursday: 4,
-            Friday: 5
-        };
+        stops = getStopsToday(stops); // Only work on stops today
 
         let currentTime = new Date();  // Get current datetime
         currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.

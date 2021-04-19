@@ -8,10 +8,16 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
+const { Client } = require("@googlemaps/google-maps-services-js");
+const {GoogleAuth} = require('google-auth-library');
 
 const homepageHelper = require('./homepageHelper')
+const client = null;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+const auth = new GoogleAuth({
+  scopes: 'https://www.googleapis.com/auth/cloud-platform'
+});
 
 const pool = new Pool({
   user: process.env.USER,
@@ -34,6 +40,9 @@ app
   .set("view engine", "ejs")
 
   .get('/home', async (req, res) => {
+    if (client === null) {
+      client = await auth.getClient();
+    }
 
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
@@ -99,13 +108,29 @@ app
     };
 
     if (startingPoint && endingPoint) {
-      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking&key=${process.env.DIRECTIONS_KEY}`
-      ).then((res) => {
-        output['route'] = res.data;
-        res.send(JSON.stringify(output));
-      }).catch((err) => {
-        res.send(JSON.stringify(output));
+      client.directions({
+        params: {
+          origin: [{ lat: startingPoint.lat, lng: startingPoint.lng }],
+          destination: [{ lat: endingPoint.lat, lng: endingPoint.lng }],
+          mode: "walking"
+        },
+        timeout: 1000, // milliseconds
       })
+        .then((r) => {
+          output['route'] = res.data;
+          res.send(JSON.stringify(output));
+        })
+        .catch((e) => {
+          console.log('Unable to send directions');
+          res.send(JSON.stringify(output));
+        });
+      // axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`
+      // ).then((res) => {
+      //   output['route'] = res.data;
+      //   res.send(JSON.stringify(output));
+      // }).catch((err) => {
+      //   res.send(JSON.stringify(output));
+      // })
     } else {
       res.send(JSON.stringify(output));
     }
@@ -134,42 +159,28 @@ app
   })
   // For posting all user login information
   .post("/saveusers", (req, res) => {
-    try {
-      pool.query(
-        "DELETE FROM users where id = " + req.body.id,
-        (error, result) => {
-          if (error) {
+      for (let rowNum in req.body.rows) 
+      {
+          let row = req.body.rows[rowNum];
+          additionalSQL += "(" + req.body.id + ", '" + row.first_name + ", '" + row.last_name + ", '" + row.major + ", '" + row.email_address + ", '" + row.password + "'),";
+      }
+
+      additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
+
+      let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+
+      pool.query(totalSQL, (error, result) => 
+      {
+        if (error) 
+        {
+            console.log(error);
             res.sendStatus(500);
-          }
-          else {
-            let additionalSQL = "";
-
-            for (let rowNum in req.body.rows) {
-              let row = req.body.rows[rowNum];
-              additionalSQL += "(" + req.body.id + ", '" + row.first_name + ", '" + row.last_name + ", '" + row.major + ", '" + row.email_address + ", '" + row.password + "'),";
-            }
-
-            additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
-
-            let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
-
-            pool.query(totalSQL, (error, result) => {
-              if (error) {
-                console.log(error);
-                res.sendStatus(500);
-              }
-              else {
-                res.sendStatus(200);
-              }
-            });
-          }
         }
-      );
-    }
-    catch (error) {
-      console.error(error);
-      res.send("Error " + error);
-    }
+        else 
+        {
+            res.sendStatus(200);
+        }
+      });
   })
 
 
@@ -220,25 +231,6 @@ app
           res.send(JSON.stringify(results));
         }
       });
-    } catch (err) {
-      console.error(err);
-      res.send("Error " + err);
-    }
-  })
-  // For getting all classes with data
-  .get("/classes", async (req, res) => {
-    try {
-      pool.query(
-        "SELECT * FROM classes where id = " + req.query.id,
-        (err, result) => {
-          if (err) {
-            res.sendStatus(404);
-          } else {
-            const results = { results: result ? result.rows : null };
-            res.send(JSON.stringify(results));
-          }
-        }
-      );
     } catch (err) {
       console.error(err);
       res.send("Error " + err);

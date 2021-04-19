@@ -156,7 +156,7 @@ app
       if (error) 
       {
           console.log(error);
-          res.sendStatus(500);
+          res.sendStatus(404);
       }
       else 
       {
@@ -167,7 +167,7 @@ app
   // For posting all user signup information
   .post("/savesignup", (req, res) => {
     
-    additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
+    additionalSQL += "(" + req.body.firstName + ", '" + req.body.lastName + ", '" + req.body.major + ", '" + req.body.emailAddress + ", '" + req.body.password + "'),";
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
@@ -178,7 +178,7 @@ app
       if (error) 
       {
           console.log(error);
-          res.sendStatus(500);
+          res.sendStatus(404);
       }
       else 
       {

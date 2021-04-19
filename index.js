@@ -75,7 +75,6 @@ let currentTime = new Date();
 let currentDay = currentTime.getDay();
 
 function isStopToday(currentStop) {
-  // If class is today
   if (currentDay === dayMap[currentStop.day]) {
     let stopTime = new Date();
     let [stopHours, stopMinutes] = currentStop.time.split(":"); // Split timestamp on ":"
@@ -83,7 +82,7 @@ function isStopToday(currentStop) {
     stopTime.setMinutes(stopMinutes);
     stopTime.setSeconds(0);
 
-    return stopTime > currentTime; // Only return classes that havent started yet.
+    return stopTime > currentTime; // Only return stops that havent started yet.
   }
   return false;
 }
@@ -155,7 +154,8 @@ app
       'classes': upcomingClasses,
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
-      'route': route
+      'route': route,
+      'currentTime': new Date()
     };
 
     res.send(JSON.stringify(output));

@@ -45,7 +45,7 @@ function parseUpcomingClasses(classes) {
     if (currentClass[dayMap[currentDay]]) {
       let classTime = new Date()
       let [classHours, classMinutes] = currentClass.time.split(":"); // Split timestamp on ":"
-      stopTime.setDate(currentTime.getDate());
+      classTime.setDate(currentTime.getDate());
       classTime.setHours(classHours);
       classTime.setMinutes(classMinutes);
       classTime.setSeconds(0);

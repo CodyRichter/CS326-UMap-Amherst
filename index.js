@@ -43,6 +43,9 @@ app
     let timeUntilNextClass = 'No more classes today.';  // How long until next class
     let route = [];  // Route from Google Maps API
 
+    let startingPoint = {};
+    let endingPoint = {};
+
     if (req.query.userID) {  // If user ID specified
 
       // Get a list of all user classes
@@ -65,7 +68,6 @@ app
 
       upcomingStops = homepageHelper.parseUpcomingStops(userStops);
 
-      let endingPoint = [];
       // If there are more classes today, update the time until the next one
       if (upcomingClasses.length > 0) {
         endingPoint = upcomingClasses[0]; // Set next class
@@ -82,7 +84,7 @@ app
       }
 
       // Get the current class user is in based on the whole class list and user stop list.
-      let startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
+      startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
       if (startingPoint.length > 0 && endingPoint.length > 0) {
         
         var config = {
@@ -93,7 +95,7 @@ app
         
         route = await axios(config);
       } else {
-        route = {};
+        route = null;
       }
     }
 
@@ -102,6 +104,8 @@ app
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
       'route': route,
+      'startingPoint': startingPoint,
+      'endingPoint': endingPoint
     };
 
     res.send(JSON.stringify(output));

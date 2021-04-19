@@ -134,26 +134,25 @@ app
   // For posting all user login information
   .post("/saveusers", (req, res) => {
     
-      additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
+    additionalSQL += "("  + req.body.first_name + ", '" + req.body.password + "'),";
 
-      additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
+    additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-      let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+    let totalSQL = "INSERT INTO users (first_name, password) VALUES " + additionalSQL;
 
-      pool.query(totalSQL, (error, result) => 
+    pool.query(totalSQL, (error, result) => 
+    {
+      if (error) 
       {
-        if (error) 
-        {
-            console.log(error);
-            res.sendStatus(500);
-        }
-        else 
-        {
-            res.sendStatus(200);
-        }
-      });
-  })
-
+          console.log(error);
+          res.sendStatus(500);
+      }
+      else 
+      {
+          res.sendStatus(200);
+      }
+    });
+})
 
   // Test Login
   .post("/login", async (req, res) => {

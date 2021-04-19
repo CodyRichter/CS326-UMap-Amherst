@@ -377,6 +377,7 @@ app.post("/savepitstops", (req, res) => {
             };
 
             stopDay = dayMap[formattedDate.getDay()];
+            stopDay.setHours(stopDay.getHours() - 4);
             stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
 
             // Add row to SQL to insert

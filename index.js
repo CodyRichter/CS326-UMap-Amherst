@@ -157,13 +157,14 @@ app
       // TODO: Use google API to plot the route.
     }
 
-
+    let currentTime = new Date()
+    currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
     let output = {
       'classes': upcomingClasses,
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
       'route': route,
-      'currentTime': new Date().setHours(new Date().getHours() - 4).toString()
+      'currentTime': currentTime
     };
 
     res.send(JSON.stringify(output));

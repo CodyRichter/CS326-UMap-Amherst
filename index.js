@@ -12,13 +12,12 @@ const { Client } = require("@googlemaps/google-maps-services-js");
 const {GoogleAuth} = require('google-auth-library');
 
 const homepageHelper = require('./homepageHelper')
-
+const client = null;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const auth = new GoogleAuth({
   scopes: 'https://www.googleapis.com/auth/cloud-platform'
 });
-const client = await auth.getClient();
 
 const pool = new Pool({
   user: process.env.USER,
@@ -41,6 +40,10 @@ app
   .set("view engine", "ejs")
 
   .get('/home', async (req, res) => {
+    if (client === null) {
+      client = await auth.getClient();
+    }
+
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
 

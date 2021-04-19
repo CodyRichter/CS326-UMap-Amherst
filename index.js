@@ -174,7 +174,7 @@ app
       res.send("Error " + error);
     }
   })
-  const users = []
+
 
   // Test Login
   .post("/login", async (req, res) => 

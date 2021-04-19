@@ -99,7 +99,7 @@ app
 
     if (startingPoint && endingPoint) {
       
-      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE`
+      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE&travelMode=WALKING`
       ).then((res) => {
         output['route'] = res.data;
         res.send(JSON.stringify(output));

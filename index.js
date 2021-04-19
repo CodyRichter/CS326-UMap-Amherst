@@ -7,7 +7,7 @@ const { Pool } = require("pg");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
-const passport = requires("passport");
+const passport = require("passport");
 
 const homepageHelper = require('./homepageHelper')
 

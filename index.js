@@ -22,6 +22,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser()); //parses json data for us
 
+
+
 // Helper function for main method. Will parse all of a user's classes and return a sorted
 // list of the classes which still are upcoming today.
 function parseUpcomingClasses(classes) {
@@ -33,15 +35,17 @@ function parseUpcomingClasses(classes) {
     5: "friday"
   };
   
-  let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+  let currentTime = new Date();  // Get current datetime
+  currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
   let currentDay = currentTime.getDay();
   
   // Reducer function. We will only accept classes that are today, and that have not already started.
   function isClassToday(currentClass) {
     // If class is today
     if (currentClass[dayMap[currentDay]]) {
-      let classTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+      let classTime = new Date()
       let [classHours, classMinutes] = currentClass.time.split(":"); // Split timestamp on ":"
+      stopTime.setDate(currentTime.getDate());
       classTime.setHours(classHours);
       classTime.setMinutes(classMinutes);
       classTime.setSeconds(0);
@@ -71,13 +75,15 @@ let dayMap = {
   Friday: 5
 };
 
-let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+let currentTime = new Date();  // Get current datetime
+currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
 let currentDay = currentTime.getDay();
 
 function isStopToday(currentStop) {
   if (currentDay === dayMap[currentStop.day]) {
-    let stopTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+    let stopTime = new Date();
     let [stopHours, stopMinutes] = currentStop.time.split(":"); // Split timestamp on ":"
+    stopTime.setDate(currentTime.getDate());
     stopTime.setHours(stopHours);
     stopTime.setMinutes(stopMinutes);
     stopTime.setSeconds(0);
@@ -136,9 +142,11 @@ app
 
       // If there are more classes today, update the time until the next one
       if (upcomingClasses.length > 0) {
-        let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
-        let nextClassTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+        let currentTime = new Date()
+        currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
+        let nextClassTime = new Date()
         let [classHours, classMinutes] = upcomingClasses[0].time.split(":"); // Split timestamp on ":"
+        nextClassTime.setDate(currentTime.getDate());
         nextClassTime.setHours(classHours);
         nextClassTime.setMinutes(classMinutes);
         nextClassTime.setSeconds(0);
@@ -155,7 +163,7 @@ app
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
       'route': route,
-      'currentTime': new Date().toLocaleString("en-US", {timeZone: "America/New_York"}).toString()
+      'currentTime': new Date().setHours(new Date().getHours() - 4).toString()
     };
 
     res.send(JSON.stringify(output));

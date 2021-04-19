@@ -8,6 +8,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
 
+const homepageHelper = require('./homepageHelper')
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const pool = new Pool({
@@ -23,132 +25,6 @@ const pool = new Pool({
 const app = express();
 app.use(cors());
 app.use(bodyParser()); //parses json data for us
-
-
-
-// Helper function for main method. Will parse all of a user's classes and return a sorted
-// list of the classes which still are upcoming today.
-function parseUpcomingClasses(classes) {
-  let dayMap = {
-    1: "monday",
-    2: "tuesday",
-    3: "wednesday",
-    4: "thursday",
-    5: "friday"
-  };
-  
-  let currentTime = new Date();  // Get current datetime
-  currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
-  let currentDay = currentTime.getDay();
-  
-  // Reducer function. We will only accept classes that are today, and that have not already started.
-  function isClassToday(currentClass) {
-    // If class is today
-    if (currentClass[dayMap[currentDay]]) {
-      let classTime = new Date()
-      let [classHours, classMinutes] = currentClass.time.split(":"); // Split timestamp on ":"
-      classTime.setDate(currentTime.getDate());
-      classTime.setHours(classHours);
-      classTime.setMinutes(classMinutes);
-      classTime.setSeconds(0);
-  
-      return classTime > currentTime; // Only return classes that havent started yet.
-    }
-    return false;
-  }
-  
-  // Return a list of all classes still upcoming today, in ascencing order
-  return classes.filter(isClassToday).sort((class1, class2) => {
-    return class1.time > class2.time;
-  });
-}
-
-
-// Helper function for main method. Will parse all of a user's pitstops and return a sorted
-// list of all of the stops which are upcoming today.
-function parseUpcomingStops(stops) {
-
-// NOTE: This day map is flipped compared to the class one.
-let dayMap = {
-  Monday: 1,
-  Tuesday: 2,
-  Wednesday: 3,
-  Thursday: 4,
-  Friday: 5
-};
-
-let currentTime = new Date();  // Get current datetime
-currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
-let currentDay = currentTime.getDay();
-
-function isStopToday(currentStop) {
-  if (currentDay === dayMap[currentStop.day]) {
-    let stopTime = new Date();
-    let [stopHours, stopMinutes] = currentStop.time.split(":"); // Split timestamp on ":"
-    stopTime.setDate(currentTime.getDate());
-    stopTime.setHours(stopHours);
-    stopTime.setMinutes(stopMinutes);
-    stopTime.setSeconds(0);
-
-    return stopTime > currentTime; // Only return stops that havent started yet.
-  }
-  return false;
-}
-
-// Return sorted list of stops
-return stops.filter(isStopToday).sort((stop1, stop2) => {
-  return stop1.time > stop2.time;
-});
-}
-
-// Helper function for main method. Will obtain the current/previous event to act as the starting point
-// on the map.
-function getStartingPointForMap(classes, stops) {
-
-  // Keep track of all daily events in a single array
-  let combinedEvents = [];
-
-  for (let dailyClass of classes) {
-    combinedEvents.push({
-      name: dailyClass.classname,
-      time: dailyClass.time,
-      lat: dailyClass.lat,
-      lng: dailyClass.lng
-    });
-  }
-
-  for (let dailyStop of stops) {
-    combinedEvents.push({
-      name: dailyStop.location,
-      time: dailyStop.time,
-      lat: dailyStop.lat,
-      lng: dailyStop.lng
-    });
-  }
-
-  // Put events in chronological order
-  combinedEvents.sort((a, b) => {
-    return a.time > b.time;
-  });
-
-  // Get current time in correct format
-  let currentTime = new Date().toLocaleTimeString("en-US", {
-    hour12: false,
-    timeZone: "America/New_York"
-  });
-
-  let previousEvent = {};
-  for (let event of combinedEvents) {
-    if (event.time > currentTime) {
-      break;
-    }
-    previousEvent = event;
-  }
-
-  return previousEvent;
-}
-
-
 
 app
   .use(express.static(path.join(__dirname, "public")))
@@ -184,9 +60,9 @@ app
       } catch (err) {} // Again, no need to handle any errors
 
       
-      upcomingClasses = parseUpcomingClasses(userClasses);
+      upcomingClasses = homepageHelper.parseUpcomingClasses(userClasses);
 
-      upcomingStops = parseUpcomingStops(userStops);
+      upcomingStops = homepageHelper.parseUpcomingStops(userStops);
 
 
       // If there are more classes today, update the time until the next one
@@ -203,7 +79,8 @@ app
         timeUntilNextClass = timeDiff.getHours() + ' Hours, ' + timeDiff.getMinutes() + ' Minutes';
       }
       
-      let startingPoint = getStartingPointForMap(userClasses, userStops);
+      // Get the current class user is in based on the whole class list and user stop list.
+      let startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
 
       route = [startingPoint];
       // TODO: Use google API to plot the route.

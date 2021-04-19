@@ -22,9 +22,9 @@ const pool = new Pool({
 // Get all classes by a given user ID
 async function getClassesByUserID(userID) {
   try {
-    let result = await pool.query(
+    let { rows } = await pool.query(
       "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + userID);
-      return result.rows;
+      return rows;
   } catch (err) {
     return [];
   }
@@ -34,10 +34,10 @@ async function getClassesByUserID(userID) {
 // Get all pitstops by a given user ID
 async function getStopsByUserID(userID) {
   try {
-    let result = await pool.query(
+    let { rows } = await pool.query(
       "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + userID
     );
-    return result.rows;
+    return rows;
   } catch (err) {
     return [];
   }
@@ -58,9 +58,30 @@ app
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
     let route = [];
-    if (req.query.userID) {
-      userClasses = getClassesByUserID(req.query.userID)
-      userStops = getStopsByUserID(req.query.userID)
+    if (req.query.userID) {  // If user ID specified
+
+      // Get a list of all user classes
+      try {
+        let { classRows } = await pool.query(
+          "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + req.query.userID);
+          userClasses = classRows;
+      } catch (err) {}  // For now no need to handle error
+
+      // Get a list of all user pitstops
+      try {
+        let { pitstopRows } = await pool.query(
+          "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + userID
+        );
+        userStops = pitstopRows;
+      } catch (err) {} // Again, no need to handle any errors
+
+      // Make list of all classes/stops today
+
+      // Get the first class/stop that is close to the current time
+
+      // Get the next class/stop to the current time
+
+      // Use google API to plot the route.
     }
 
 

@@ -83,7 +83,7 @@ app
       // Get the current class user is in based on the whole class list and user stop list.
       let startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
 
-      route = [startingPoint];
+      route = startingPoint;
       // TODO: Use google API to plot the route.
     }
 

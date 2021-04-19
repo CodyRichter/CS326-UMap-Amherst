@@ -70,7 +70,7 @@ app
       // Get a list of all user pitstops
       try {
         let { pitstopRows } = await pool.query(
-          "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + userID
+          "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + req.query.userID
         );
         userStops = pitstopRows;
       } catch (err) {} // Again, no need to handle any errors

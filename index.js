@@ -22,6 +22,80 @@ const app = express();
 app.use(cors());
 app.use(bodyParser()); //parses json data for us
 
+// Helper function for main method. Will parse all of a user's classes and return a sorted
+// list of the classes which still are upcoming today.
+function parseUpcomingClasses(classes) {
+  let dayMap = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday"
+  };
+  
+  let currentTime = new Date();
+  let currentDay = currentTime.getDay();
+  
+  // Reducer function. We will only accept classes that are today, and that have not already started.
+  function isClassToday(currentClass) {
+    // If class is today
+    if (currentClass[dayMap[currentDay]]) {
+      let classTime = new Date();
+      let [classHours, classMinutes] = currentClass.time.split(":"); // Split timestamp on ":"
+      classTime.setHours(classHours);
+      classTime.setMinutes(classMinutes);
+      classTime.setSeconds(0);
+  
+      return classTime > currentTime; // Only return classes that havent started yet.
+    }
+    return false;
+  }
+  
+  // Return a list of all classes still upcoming today, in ascencing order
+  return classes.filter(isClassToday).sort((class1, class2) => {
+    return class1.time > class2.time;
+  });
+}
+
+
+// Helper function for main method. Will parse all of a user's pitstops and return a sorted
+// list of all of the stops which are upcoming today.
+function parseUpcomingStops(stops) {
+
+// NOTE: This day map is flipped compared to the class one.
+let dayMap = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5
+};
+
+let currentTime = new Date();
+let currentDay = currentTime.getDay();
+
+function isStopToday(currentStop) {
+  // If class is today
+  if (currentDay === dayMap[currentStop.day]) {
+    let stopTime = new Date();
+    let [stopHours, stopMinutes] = currentStop.time.split(":"); // Split timestamp on ":"
+    stopTime.setHours(stopHours);
+    stopTime.setMinutes(stopMinutes);
+    stopTime.setSeconds(0);
+
+    return stopTime > currentTime; // Only return classes that havent started yet.
+  }
+  return false;
+}
+
+// Return sorted list of stops
+return stops.filter(isStopToday).sort((stop1, stop2) => {
+  return stop1.time > stop2.time;
+});
+}
+
+
+
 app
   .use(express.static(path.join(__dirname, "public")))
   .use(express.urlencoded({ extended: true }))
@@ -31,7 +105,8 @@ app
   .get('/home', async (req, res) => {
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
-    let route = [];
+    let timeUntilNextClass = 'No more classes today.';  // How long until next class
+    let route = [];  // Route from Google Maps API
 
     if (req.query.userID) {  // If user ID specified
 
@@ -50,19 +125,32 @@ app
         userStops = result ? result.rows : [];
       } catch (err) {} // Again, no need to handle any errors
 
-      // Make list of all classes/stops today
+      
+      let upcomingClasses = parseUpcomingClasses(userClasses);
 
-      // Get the first class/stop that is close to the current time
+      let upcomingStops = parseUpcomingStops(userStops);
 
-      // Get the next class/stop to the current time
 
-      // Use google API to plot the route.
+      // If there are more classes today, update the time until the next one
+      if (upcomingClasses.length > 0) {
+        let currentTime = new Date();
+        let nextClassTime = new Date();
+        let [classHours, classMinutes] = upcomingClasses[0].time.split(":"); // Split timestamp on ":"
+        nextClassTime.setHours(classHours);
+        nextClassTime.setMinutes(classMinutes);
+        nextClassTime.setSeconds(0);
+        let timeDiff = new Date(nextClassTime - currentTime);
+        timeUntilNextClass = timeDiff.getHours() + ' ' + timeDiff.getMinutes();
+      }
+      
+      // TODO: Use google API to plot the route.
     }
 
 
     let output = {
-      'classes': userClasses,
-      'stops': userStops,
+      'classes': upcomingClasses,
+      'timeUntilNextClass': timeUntilNextClass,
+      'stops': upcomingStops,
       'route': route
     };
 

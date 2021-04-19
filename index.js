@@ -7,6 +7,7 @@ const { Pool } = require("pg");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
+const passport = requires("passport");
 
 const homepageHelper = require('./homepageHelper')
 
@@ -172,6 +173,30 @@ app
       console.error(error);
       res.send("Error " + error);
     }
+  })
+  const users = []
+
+  // Test Login
+  .post("/login", async (req, res) => 
+  {
+    try 
+    {
+     users.push(
+     {
+      id: req.body.id,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      major: req.body.major,
+      email_address: req.body.email_address,
+      password: req.body.password
+     }) 
+    } 
+    catch
+    {
+      res.redirect("/users");
+    }
+    console.log(users);
+    console.log(req.body);
   })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {

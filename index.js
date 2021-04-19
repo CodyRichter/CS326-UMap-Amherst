@@ -1,10 +1,12 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
+const axios = require('axios');
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 const { Pool } = require("pg");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { start } = require("repl");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -99,6 +101,53 @@ return stops.filter(isStopToday).sort((stop1, stop2) => {
 });
 }
 
+// Helper function for main method. Will obtain the current/previous event to act as the starting point
+// on the map.
+function getStartingPointForMap(classes, stops) {
+
+  // Keep track of all daily events in a single array
+  let combinedEvents = [];
+
+  for (let dailyClass of classes) {
+    combinedEvents.push({
+      name: dailyClass.classname,
+      time: dailyClass.time,
+      lat: dailyClass.lat,
+      lng: dailyClass.lng
+    });
+  }
+
+  for (let dailyStop of stops) {
+    combinedEvents.push({
+      name: dailyStop.location,
+      time: dailyStop.time,
+      lat: dailyStop.lat,
+      lng: dailyStop.lng
+    });
+  }
+
+  // Put events in chronological order
+  combinedEvents.sort((a, b) => {
+    return a.time > b.time;
+  });
+
+  // Get current time in correct format
+  let currentTime = new Date().toLocaleTimeString("en-US", {
+    hour12: false,
+    timeZone: "America/New_York"
+  });
+
+  let previousEvent = {};
+  for (let event of combinedEvents) {
+    if (event.time > currentTime) {
+      break;
+    }
+    previousEvent = event;
+  }
+
+  return previousEvent;
+}
+
 
 
 app
@@ -122,14 +171,14 @@ app
       // Get a list of all user classes
       try {
         let result = await pool.query(
-          "SELECT classes.name className, buildings.name buildingName, room, time, monday, tuesday, wednesday, thursday, friday FROM (classes INNER JOIN userclasses on classes.id = userclasses.class) INNER JOIN buildings on classes.building = buildings.id WHERE userid = " + req.query.userID);
+          "SELECT classes.name className, buildings.name buildingName, room, time, monday, tuesday, wednesday, thursday, friday, lat, lng FROM (classes INNER JOIN userclasses on classes.id = userclasses.class) INNER JOIN buildings on classes.building = buildings.id WHERE userid = " + req.query.userID);
           userClasses = result ? result.rows : [];
       } catch (err) {}  // For now no need to handle error
 
       // Get a list of all user pitstops
       try {
         let result= await pool.query(
-          "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + req.query.userID
+          "SELECT day, time, location, lat, lng FROM (userpitstops INNER JOIN pitstops ON pitstops.id = userpitstops.stopid) INNER JOIN buildings ON buildings.id = pitstops.building WHERE userid = " + req.query.userID
         );
         userStops = result ? result.rows : [];
       } catch (err) {} // Again, no need to handle any errors
@@ -151,20 +200,20 @@ app
         nextClassTime.setMinutes(classMinutes);
         nextClassTime.setSeconds(0);
         let timeDiff = new Date(nextClassTime - currentTime);
-        timeUntilNextClass = timeDiff.getHours() + ' ' + timeDiff.getMinutes();
+        timeUntilNextClass = timeDiff.getHours() + ' Hours, ' + timeDiff.getMinutes() + ' Minutes';
       }
       
+      let startingPoint = getStartingPointForMap(userClasses, userStops);
+
+      route = [startingPoint];
       // TODO: Use google API to plot the route.
     }
 
-    let currentTime = new Date()
-    currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
     let output = {
       'classes': upcomingClasses,
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
       'route': route,
-      'currentTime': currentTime
     };
 
     res.send(JSON.stringify(output));

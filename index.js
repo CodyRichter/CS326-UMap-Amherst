@@ -105,6 +105,10 @@ app
   .get('/home', async (req, res) => {
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
+
+    let upcomingClasses = [];
+    let upcomingStops = [];
+
     let timeUntilNextClass = 'No more classes today.';  // How long until next class
     let route = [];  // Route from Google Maps API
 
@@ -126,9 +130,9 @@ app
       } catch (err) {} // Again, no need to handle any errors
 
       
-      let upcomingClasses = parseUpcomingClasses(userClasses);
+      upcomingClasses = parseUpcomingClasses(userClasses);
 
-      let upcomingStops = parseUpcomingStops(userStops);
+      upcomingStops = parseUpcomingStops(userStops);
 
 
       // If there are more classes today, update the time until the next one

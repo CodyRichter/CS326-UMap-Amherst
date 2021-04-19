@@ -33,14 +33,14 @@ function parseUpcomingClasses(classes) {
     5: "friday"
   };
   
-  let currentTime = new Date();
+  let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   let currentDay = currentTime.getDay();
   
   // Reducer function. We will only accept classes that are today, and that have not already started.
   function isClassToday(currentClass) {
     // If class is today
     if (currentClass[dayMap[currentDay]]) {
-      let classTime = new Date();
+      let classTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
       let [classHours, classMinutes] = currentClass.time.split(":"); // Split timestamp on ":"
       classTime.setHours(classHours);
       classTime.setMinutes(classMinutes);
@@ -71,12 +71,12 @@ let dayMap = {
   Friday: 5
 };
 
-let currentTime = new Date();
+let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
 let currentDay = currentTime.getDay();
 
 function isStopToday(currentStop) {
   if (currentDay === dayMap[currentStop.day]) {
-    let stopTime = new Date();
+    let stopTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
     let [stopHours, stopMinutes] = currentStop.time.split(":"); // Split timestamp on ":"
     stopTime.setHours(stopHours);
     stopTime.setMinutes(stopMinutes);
@@ -136,8 +136,8 @@ app
 
       // If there are more classes today, update the time until the next one
       if (upcomingClasses.length > 0) {
-        let currentTime = new Date();
-        let nextClassTime = new Date();
+        let currentTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+        let nextClassTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
         let [classHours, classMinutes] = upcomingClasses[0].time.split(":"); // Split timestamp on ":"
         nextClassTime.setHours(classHours);
         nextClassTime.setMinutes(classMinutes);
@@ -155,7 +155,7 @@ app
       'timeUntilNextClass': timeUntilNextClass,
       'stops': upcomingStops,
       'route': route,
-      'currentTime': new Date()
+      'currentTime': new Date().toLocaleString("en-US", {timeZone: "America/New_York"}).toString()
     };
 
     res.send(JSON.stringify(output));

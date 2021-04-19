@@ -376,8 +376,8 @@ app.post("/savepitstops", (req, res) => {
               6: "Saturday"
             };
 
+            formattedDate.setHours(formattedDate.getHours() - 4);
             stopDay = dayMap[formattedDate.getDay()];
-            stopDay.setHours(stopDay.getHours() - 4);
             stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
 
             // Add row to SQL to insert
@@ -391,6 +391,11 @@ app.post("/savepitstops", (req, res) => {
           let totalSQL =
             "INSERT INTO userpitstops (userID, stopID, stopTime, day, time) VALUES " +
             additionalSQL;
+
+          if (additionalSQL.length === 0) {  // If no pit stops then don't send data
+            res.sendStatus(200);
+            return;
+          }
 
           pool.query(totalSQL, (err, result) => {
             if (err) {

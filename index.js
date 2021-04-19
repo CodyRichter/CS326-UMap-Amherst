@@ -17,6 +17,33 @@ const pool = new Pool({
   ssl: true,
 });
 
+
+// DB helper function
+// Get all classes by a given user ID
+async function getClassesByUserID(userID) {
+  try {
+    let result = await pool.query(
+      "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + userID);
+      return result.rows;
+  } catch (err) {
+    return [];
+  }
+}
+
+// DB helper function
+// Get all pitstops by a given user ID
+async function getStopsByUserID(userID) {
+  try {
+    let result = await pool.query(
+      "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + userID
+    );
+    return result.rows;
+  } catch (err) {
+    return [];
+  }
+}
+
+
 const app = express();
 app.use(cors());
 app.use(bodyParser()); //parses json data for us

@@ -87,13 +87,14 @@ app
       startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
       if (startingPoint && endingPoint) {
         
-        var config = {
+        let config = {
           method: 'get',
           url: `https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE`,
           headers: { }
         };
         
-        route = await axios(config);
+        // route = await axios(config);
+        route = null;
       } else {
         route = null;
       }

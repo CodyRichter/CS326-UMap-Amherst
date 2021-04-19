@@ -142,15 +142,17 @@ module.exports = {
             timeZone: "America/New_York"
         });
 
-        let previousEvent = {};
-        for (let event of combinedEvents) {
-            if (event.time > currentTime) {
-                break;
-            }
-            previousEvent = event;
-        }
+        // let previousEvent = {};
+        // for (let event of combinedEvents) {
+        //     if (event.time > currentTime) {
+        //         break;
+        //     }
+        //     previousEvent = event;
+        // }
 
-        return [previousEvent, combinedEvents, currentTime];
+        let previousEvent = combinedEvents[0];
+
+        return [previousEvent];
     }
 
 };

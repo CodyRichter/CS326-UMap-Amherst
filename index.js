@@ -18,32 +18,6 @@ const pool = new Pool({
 });
 
 
-// DB helper function
-// Get all classes by a given user ID
-async function getClassesByUserID(userID) {
-  try {
-    let { rows } = await pool.query(
-      "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + userID);
-      return rows;
-  } catch (err) {
-    return [];
-  }
-}
-
-// DB helper function
-// Get all pitstops by a given user ID
-async function getStopsByUserID(userID) {
-  try {
-    let { rows } = await pool.query(
-      "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + userID
-    );
-    return rows;
-  } catch (err) {
-    return [];
-  }
-}
-
-
 const app = express();
 app.use(cors());
 app.use(bodyParser()); //parses json data for us
@@ -63,17 +37,17 @@ app
 
       // Get a list of all user classes
       try {
-        let { classRows } = await pool.query(
+        let result = await pool.query(
           "SELECT name, room, time, monday, tuesday, wednesday, thursday, friday FROM classes INNER JOIN userclasses on id = class WHERE userid = " + req.query.userID);
-          userClasses = classRows;
+          userClasses = result ? result.rows : []
       } catch (err) {}  // For now no need to handle error
 
       // Get a list of all user pitstops
       try {
-        let { pitstopRows } = await pool.query(
+        let result= await pool.query(
           "SELECT day, time, location FROM userpitstops INNER JOIN pitstops ON id = stopid WHERE userid = " + req.query.userID
         );
-        userStops = pitstopRows;
+        userStops = result ? result.rows : [];
       } catch (err) {} // Again, no need to handle any errors
 
       // Make list of all classes/stops today

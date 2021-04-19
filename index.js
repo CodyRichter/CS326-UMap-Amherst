@@ -104,7 +104,7 @@ app
         res.send(JSON.stringify(output));
       }).catch((err) => {
         res.send(JSON.stringify(output));
-      })
+      });
     } else {
       res.send(JSON.stringify(output));
     }
@@ -350,7 +350,7 @@ app.post("/savepitstops", (req, res) => {
           for (let rowNum in req.body.rows) {
             let row = req.body.rows[rowNum];
 
-            let formattedDate = startingDate.replaceAll("-", "/");
+            let formattedDate = row.time.replaceAll("-", "/");
             formattedDate = formattedDate.split('+')[0]
             formattedDate = formattedDate.split('.')[0]
 

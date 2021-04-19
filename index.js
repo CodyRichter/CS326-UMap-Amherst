@@ -139,9 +139,9 @@ app
     }
   })
   // For posting all user login information
-  .post("/saveusers", (req, res) => {
+  .post("/login", (req, res) => {
     
-    additionalSQL += "("  + req.body.first_name + ", '" + req.body.password + "'),";
+    additionalSQL += "(" + req.body.username + ", '" + req.body.password + "'),";
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
@@ -159,27 +159,28 @@ app
           res.sendStatus(200);
       }
     });
-})
+  })
+  // For posting all user signup information
+  .post("/signup", (req, res) => {
+    
+    additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
 
-  // Test Login
-  .post("/login", async (req, res) => {
-    try {
-      users.push(
-        {
-          id: req.body.id,
-          first_name: req.body.first_name,
-          last_name: req.body.last_name,
-          major: req.body.major,
-          email_address: req.body.email_address,
-          password: req.body.password
-        })
-    }
-    catch
+    additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
+
+    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+
+    pool.query(totalSQL, (error, result) => 
     {
-      res.redirect("/users");
-    }
-    console.log(users);
-    console.log(req.body);
+      if (error) 
+      {
+          console.log(error);
+          res.sendStatus(500);
+      }
+      else 
+      {
+          res.sendStatus(200);
+      }
+    });
   })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {

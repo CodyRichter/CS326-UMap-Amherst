@@ -349,8 +349,8 @@ app.post("/savepitstops", (req, res) => {
 
           for (let rowNum in req.body.rows) {
             let row = req.body.rows[rowNum];
-
-            let formattedDate = row.time.replaceAll("-", "/");
+            console.log(row.time);
+            let formattedDate = row.time.toString().toString().replaceAll("-", "/");
             formattedDate = formattedDate.split('+')[0]
             formattedDate = formattedDate.split('.')[0]
 
@@ -369,7 +369,7 @@ app.post("/savepitstops", (req, res) => {
             stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
 
             additionalSQL +=
-              "(" + req.body.userID + ", " + row.id + ", '" + row.time + ", " + row.stopDay + ", " + row.stopTime + "'),";
+              "(" + req.body.userID + ", " + row.id + ", '" + row.time + ", " + stopDay + ", " + stopTime + "'),";
           }
 
           additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);

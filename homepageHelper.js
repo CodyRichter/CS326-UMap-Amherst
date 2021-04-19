@@ -142,14 +142,13 @@ module.exports = {
             timeZone: "America/New_York"
         });
 
-        let previousEvent = {};
+        let previousEvent = null;
         for (let event of combinedEvents) {
             if (event.time > currentTime) {
                 break;
             }
             previousEvent = event;
         }
-        console.log(combinedEvents);
 
         return previousEvent;
     }

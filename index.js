@@ -43,8 +43,8 @@ app
     let timeUntilNextClass = 'No more classes today.';  // How long until next class
     let route = [];  // Route from Google Maps API
 
-    let startingPoint = {};
-    let endingPoint = {};
+    let startingPoint = null;
+    let endingPoint = null;
 
     if (req.query.userID) {  // If user ID specified
 
@@ -93,8 +93,7 @@ app
           headers: { }
         };
         
-        // route = await axios(config);
-        route = null;
+        route = await axios(config);
       } else {
         route = null;
       }

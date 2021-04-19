@@ -139,7 +139,7 @@ app
     }
   })
   // For posting all user login information
-  .post("/login", (req, res) => {
+  .post("/savelogin", (req, res) => {
     
     additionalSQL += "(" + req.body.username + ", '" + req.body.password + "'),";
 
@@ -161,7 +161,7 @@ app
     });
   })
   // For posting all user signup information
-  .post("/signup", (req, res) => {
+  .post("/savesignup", (req, res) => {
     
     additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
 

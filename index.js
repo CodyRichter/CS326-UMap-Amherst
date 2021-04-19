@@ -26,12 +26,27 @@ app
   .use(express.urlencoded({ extended: true }))
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
-  .get("/test", (req, res) =>
-    res.render("pages/test", { users: ["John", "Paul", "Ringo"] })
-  )
-  .get("/", function (req, res) {
-    res.sendFile(path.join(__dirname + "/index.html"));
+  
+  .get('/home', async (req, res) => {
+    let userClasses = [];  // All user classes
+    let userStops = [];  // All user pitstops
+    let route = [];
+    if (req.query.userID) {
+      userClasses = getClassesByUserID(req.query.userID)
+      userStops = getStopsByUserID(req.query.userID)
+    }
+
+
+    let output = {
+      'classes': userClasses,
+      'stops': userStops,
+      'route': route
+    };
+
+    return JSON.stringify(output);
+    
   })
+
   // For getting all login information
   .get("/users", async (req, res) => 
   {
@@ -65,7 +80,7 @@ app
     try 
     {
       pool.query(
-        "DELETE FROM user where id = " + req.body.id,
+        "DELETE FROM users where id = " + req.body.id,
         (error, result) => 
         {
           if (error) 

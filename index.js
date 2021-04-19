@@ -164,7 +164,7 @@ app
         "DELETE FROM users where id = " + req.body.id,
         (error, result) => {
           if (error) {
-            res.sendStatus(404);
+            res.sendStatus(500);
           }
           else {
             let additionalSQL = "";
@@ -181,7 +181,7 @@ app
             pool.query(totalSQL, (error, result) => {
               if (error) {
                 console.log(error);
-                res.sendStatus(404);
+                res.sendStatus(500);
               }
               else {
                 res.sendStatus(200);

@@ -113,6 +113,8 @@ app
 
   // For getting all login information
   .get("/users", async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.send("Test");
     try {
       pool.query("SELECT * FROM users", (error, result) => {
         if (error) {
@@ -134,6 +136,8 @@ app
   })
   // For posting all user login information
   .post("/saveusers", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.send("Test");
     try {
       pool.query(
         "DELETE FROM users where id = " + req.body.id,

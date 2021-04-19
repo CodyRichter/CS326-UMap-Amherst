@@ -149,7 +149,7 @@ module.exports = {
             }
             previousEvent = event;
         }
-
+        console.log(combinedEvents);
 
         return previousEvent;
     }

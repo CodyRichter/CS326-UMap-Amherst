@@ -41,7 +41,7 @@ app
     let upcomingStops = [];
 
     let timeUntilNextClass = 'No more classes today.';  // How long until next class
-    let route = [];  // Route from Google Maps API
+    let route = null;  // Route from Google Maps API
 
     let startingPoint = null;
     let endingPoint = null;
@@ -85,17 +85,7 @@ app
 
       // Get the current class user is in based on the whole class list and user stop list.
       startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
-      if (startingPoint && endingPoint) {
      
-      try {
-        route = await axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE`)
-      } catch (error) {
-        route = null;
-      }
-       
-      } else {
-        route = null;
-      }
     }
 
     let output = {
@@ -107,8 +97,18 @@ app
       'endingPoint': endingPoint
     };
 
-    res.send(JSON.stringify(output));
-
+    if (startingPoint && endingPoint) {
+      
+      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE`
+      ).then((res) => {
+        output['route'] = res.data;
+        res.send(JSON.stringify(output));
+      }).catch((err) => {
+        res.send(JSON.stringify(output));
+      })
+      } else {
+        res.send(JSON.stringify(output));
+      }
   })
 
   // For getting all login information

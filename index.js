@@ -209,6 +209,25 @@ app
       }
     }
   })
+  // For getting all classes information
+  .get("/classes", async (req, res) => {
+    try {
+      pool.query(
+        "SELECT * FROM classes where id = " + req.query.id,
+        (err, result) => {
+          if (err) {
+            res.sendStatus(404);
+          } else {
+            const results = { results: result ? result.rows : null };
+            res.send(JSON.stringify(results));
+          }
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      res.send("Error " + err);
+    }
+  })
   //For Getting all selectable classes in adding menu
   .get("/classOptions", async (req, res) => {
     try {

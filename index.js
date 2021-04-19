@@ -65,9 +65,10 @@ app
 
       upcomingStops = homepageHelper.parseUpcomingStops(userStops);
 
-
+      let endingPoint = [];
       // If there are more classes today, update the time until the next one
       if (upcomingClasses.length > 0) {
+        endingPoint = upcomingClasses[0]; // Set next class
         let currentTime = new Date()
         currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
         let nextClassTime = new Date()
@@ -82,9 +83,18 @@ app
 
       // Get the current class user is in based on the whole class list and user stop list.
       let startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
-
-      route = startingPoint;
-      // TODO: Use google API to plot the route.
+      if (startingPoint.length > 0 && endingPoint.length > 0) {
+        
+        var config = {
+          method: 'get',
+          url: `https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyAz2oL1-IeVDxCY7lWV2ivTZ3LIpEkrWEE`,
+          headers: { }
+        };
+        
+        route = await axios(config);
+      } else {
+        route = {};
+      }
     }
 
     let output = {

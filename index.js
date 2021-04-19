@@ -8,16 +8,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
-const { Client } = require("@googlemaps/google-maps-services-js");
-const {GoogleAuth} = require('google-auth-library');
 
 const homepageHelper = require('./homepageHelper')
-const client = null;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const auth = new GoogleAuth({
-  scopes: 'https://www.googleapis.com/auth/cloud-platform'
-});
 
 const pool = new Pool({
   user: process.env.USER,
@@ -40,9 +33,6 @@ app
   .set("view engine", "ejs")
 
   .get('/home', async (req, res) => {
-    if (client === null) {
-      client = await auth.getClient();
-    }
 
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
@@ -108,29 +98,13 @@ app
     };
 
     if (startingPoint && endingPoint) {
-      client.directions({
-        params: {
-          origin: [{ lat: startingPoint.lat, lng: startingPoint.lng }],
-          destination: [{ lat: endingPoint.lat, lng: endingPoint.lng }],
-          mode: "walking"
-        },
-        timeout: 1000, // milliseconds
+      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking&key=${process.env.DIRECTIONS_KEY}`
+      ).then((res) => {
+        output['route'] = res.data;
+        res.send(JSON.stringify(output));
+      }).catch((err) => {
+        res.send(JSON.stringify(output));
       })
-        .then((r) => {
-          output['route'] = res.data;
-          res.send(JSON.stringify(output));
-        })
-        .catch((e) => {
-          console.log('Unable to send directions');
-          res.send(JSON.stringify(output));
-        });
-      // axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`
-      // ).then((res) => {
-      //   output['route'] = res.data;
-      //   res.send(JSON.stringify(output));
-      // }).catch((err) => {
-      //   res.send(JSON.stringify(output));
-      // })
     } else {
       res.send(JSON.stringify(output));
     }

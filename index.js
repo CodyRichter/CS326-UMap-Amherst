@@ -209,10 +209,10 @@ app
       res.send("Error " + err);
     }
   })
-  //For Getting all classes
-  .get("/classes", async (req, res) => {
+  //For Getting all selectable classes in adding menu
+  .get("/classOptions", async (req, res) => {
     try {
-      pool.query("SELECT * FROM classes", (err, result) => {
+      pool.query("SELECT * FROM classOptions", (err, result) => {
         if (err) {
           res.sendStatus(404);
         } else {

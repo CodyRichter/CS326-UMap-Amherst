@@ -58,6 +58,7 @@ app
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
     let route = [];
+
     if (req.query.userID) {  // If user ID specified
 
       // Get a list of all user classes
@@ -91,7 +92,7 @@ app
       'route': route
     };
 
-    return JSON.stringify(output);
+    res.send(JSON.stringify(output));
     
   })
 

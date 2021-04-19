@@ -24,8 +24,6 @@ const pool = new Pool({
   ssl: true,
 });
 
-let GOOGLE_API_KEY_INFO = JSON.parse(process.env.GOOGLE_AUTH);
-GoogleAuth.fromJSON(GOOGLE_API_KEY_INFO);
 
 const app = express();
 app.use(cors());

@@ -120,11 +120,14 @@ app
   // For getting all login information
   .get("/users", async (req, res) => {
     try {
-      pool.query("SELECT * FROM users", (error, result) => {
-        if (error) {
+      pool.query("SELECT * FROM users", (error, result) => 
+      {
+        if (err) 
+        {
           res.sendStatus(404);
         }
-        else {
+        else 
+        {
           const results =
           {
             results: result ? result.rows : null
@@ -133,9 +136,10 @@ app
         }
       });
     }
-    catch (error) {
-      console.error(error);
-      res.send("Error " + error);
+    catch (err) 
+    {
+      console.error(err);
+      res.send("Error " + err);
     }
   })
   // For posting all user login information
@@ -147,38 +151,38 @@ app
 
     let totalSQL = "INSERT INTO users (first_name, password) VALUES " + additionalSQL;
 
-    pool.query(totalSQL, (error, result) => 
+    pool.query(totalSQL, (err, result) => 
     {
-      if (error) 
+      if (err) 
       {
-          console.log(error);
-          result.sendStatus(500);
+          console.log(err);
+          res.sendStatus(404);
       }
       else 
       {
-          result.sendStatus(200);
+          res.sendStatus(200);
       }
     });
   })
   // For posting all user signup information
   .post("/savesignup", (req, result) => {
     
-    additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
+    additionalSQL += "(" + req.body.firstName + ", '" + req.body.lastName + ", '" + req.body.major + ", '" + req.body.emailAddress + ", '" + req.body.password + "'),";
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
 
-    pool.query(totalSQL, (error, result) => 
+    pool.query(totalSQL, (err, result) => 
     {
-      if (error) 
+      if (err) 
       {
-          console.log(error);
-          result.sendStatus(500);
+          console.log(err);
+          res.sendStatus(404);
       }
       else 
       {
-          result.sendStatus(200);
+          res.sendStatus(200);
       }
     });
   })

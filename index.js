@@ -375,14 +375,33 @@ app.post("/savepitstops", (req, res) => {
 
           for (let rowNum in req.body.rows) {
             let row = req.body.rows[rowNum];
+
+            let formattedDate = startingDate.replaceAll("-", "/");
+            formattedDate = formattedDate.split('+')[0]
+            formattedDate = formattedDate.split('.')[0]
+
+            formattedDate = new Date(formattedDate);
+            let dayMap = {
+              0: "Sunday",
+              1: "Monday",
+              2: "Tuesday",
+              3: "Wednesday",
+              4: "Thursday",
+              5: "Friday",
+              6: "Saturday"
+            };
+
+            stopDay = dayMap[formattedDate.getDay()];
+            stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
+
             additionalSQL +=
-              "(" + req.body.userID + ", " + row.id + ", '" + row.time + "'),";
+              "(" + req.body.userID + ", " + row.id + ", '" + row.time + ", " + row.stopDay + ", " + row.stopTime + "'),";
           }
 
           additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
           let totalSQL =
-            "INSERT INTO userpitstops (userID, stopID, stopTime) VALUES " +
+            "INSERT INTO userpitstops (userID, stopID, stopTime, day, time) VALUES " +
             additionalSQL;
 
           pool.query(totalSQL, (err, result) => {

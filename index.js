@@ -8,12 +8,13 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
-const {GoogleAuth} = require('google-auth-library');
-
+const { Client } = require("@googlemaps/google-maps-services-js");
 
 const homepageHelper = require('./homepageHelper')
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+const client = new Client({});
 
 const pool = new Pool({
   user: process.env.USER,
@@ -87,7 +88,7 @@ app
 
       // Get the current class user is in based on the whole class list and user stop list.
       startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
-     
+
     }
 
     let output = {
@@ -100,17 +101,31 @@ app
     };
 
     if (startingPoint && endingPoint) {
-      
-      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`
-      ).then((res) => {
-        output['route'] = res.data;
-        res.send(JSON.stringify(output));
-      }).catch((err) => {
-        res.send(JSON.stringify(output));
+      client.directions({
+        params: {
+          origin: [{ lat: startingPoint.lat, lng: startingPoint.lng }],
+          destination: [{ lat: endingPoint.lat, lng: endingPoint.lng }],
+          mode: "walking"
+        },
+        timeout: 1000, // milliseconds
       })
-      } else {
-        res.send(JSON.stringify(output));
-      }
+        .then((r) => {
+          output['route'] = res.data;
+          res.send(JSON.stringify(output));
+        })
+        .catch((e) => {
+          res.send(JSON.stringify(output));
+        });
+      // axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`
+      // ).then((res) => {
+      //   output['route'] = res.data;
+      //   res.send(JSON.stringify(output));
+      // }).catch((err) => {
+      //   res.send(JSON.stringify(output));
+      // })
+    } else {
+      res.send(JSON.stringify(output));
+    }
   })
 
   // For getting all login information

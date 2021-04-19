@@ -32,7 +32,7 @@ app
   .use(express.urlencoded({ extended: true }))
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
-  
+
   .get('/home', async (req, res) => {
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops
@@ -49,18 +49,18 @@ app
       try {
         let result = await pool.query(
           "SELECT classes.name className, buildings.name buildingName, room, time, monday, tuesday, wednesday, thursday, friday, lat, lng FROM (classes INNER JOIN userclasses on classes.id = userclasses.class) INNER JOIN buildings on classes.building = buildings.id WHERE userid = " + req.query.userID);
-          userClasses = result ? result.rows : [];
-      } catch (err) {}  // For now no need to handle error
+        userClasses = result ? result.rows : [];
+      } catch (err) { }  // For now no need to handle error
 
       // Get a list of all user pitstops
       try {
-        let result= await pool.query(
+        let result = await pool.query(
           "SELECT day, time, location, lat, lng FROM (userpitstops INNER JOIN pitstops ON pitstops.id = userpitstops.stopid) INNER JOIN buildings ON buildings.id = pitstops.building WHERE userid = " + req.query.userID
         );
         userStops = result ? result.rows : [];
-      } catch (err) {} // Again, no need to handle any errors
+      } catch (err) { } // Again, no need to handle any errors
 
-      
+
       upcomingClasses = homepageHelper.parseUpcomingClasses(userClasses);
 
       upcomingStops = homepageHelper.parseUpcomingStops(userStops);
@@ -79,7 +79,7 @@ app
         let timeDiff = new Date(nextClassTime - currentTime);
         timeUntilNextClass = timeDiff.getHours() + ' Hours, ' + timeDiff.getMinutes() + ' Minutes';
       }
-      
+
       // Get the current class user is in based on the whole class list and user stop list.
       let startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
 
@@ -95,55 +95,43 @@ app
     };
 
     res.send(JSON.stringify(output));
-    
+
   })
 
   // For getting all login information
-  .get("/users", async (req, res) => 
-  {
-    try 
-    {
-      pool.query("SELECT * FROM users", (error, result) => 
-      {
-        if (error) 
-        {
+  .get("/users", async (req, res) => {
+    try {
+      pool.query("SELECT * FROM users", (error, result) => {
+        if (error) {
           res.sendStatus(404);
-        } 
-        else 
-        {
-          const results = 
-          { 
-            results: result ? result.rows : null 
+        }
+        else {
+          const results =
+          {
+            results: result ? result.rows : null
           };
           res.send(JSON.stringify(results));
         }
       });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
       console.error(error);
       res.send("Error " + error);
     }
   })
   // For posting all user login information
-  .post("/saveusers", (req, res) => 
-  {
-    try 
-    {
+  .post("/saveusers", (req, res) => {
+    try {
       pool.query(
         "DELETE FROM users where id = " + req.body.id,
-        (error, result) => 
-        {
-          if (error) 
-          {
+        (error, result) => {
+          if (error) {
             res.sendStatus(404);
-          } 
-          else 
-          {
+          }
+          else {
             let additionalSQL = "";
 
-            for (let rowNum in req.body.rows) 
-            {
+            for (let rowNum in req.body.rows) {
               let row = req.body.rows[rowNum];
               additionalSQL += "(" + req.body.id + ", '" + row.first_name + ", '" + row.last_name + ", '" + row.major + ", '" + row.email_address + ", '" + row.password + "'),";
             }
@@ -152,24 +140,20 @@ app
 
             let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
 
-            pool.query(totalSQL, (error, result) => 
-            {
-              if (error) 
-              {
+            pool.query(totalSQL, (error, result) => {
+              if (error) {
                 console.log(error);
                 res.sendStatus(404);
-              } 
-              else 
-              {
+              }
+              else {
                 res.sendStatus(200);
               }
             });
           }
         }
       );
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
       console.error(error);
       res.send("Error " + error);
     }
@@ -177,20 +161,18 @@ app
 
 
   // Test Login
-  .post("/login", async (req, res) => 
-  {
-    try 
-    {
-     users.push(
-     {
-      id: req.body.id,
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      major: req.body.major,
-      email_address: req.body.email_address,
-      password: req.body.password
-     }) 
-    } 
+  .post("/login", async (req, res) => {
+    try {
+      users.push(
+        {
+          id: req.body.id,
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          major: req.body.major,
+          email_address: req.body.email_address,
+          password: req.body.password
+        })
+    }
     catch
     {
       res.redirect("/users");

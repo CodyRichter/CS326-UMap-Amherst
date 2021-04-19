@@ -33,39 +33,11 @@ app
     res.sendFile(path.join(__dirname + "/index.html"));
   })
   // For getting all login information
-  .get("/login", async (req, res) => 
+  .get("/users", async (req, res) => 
   {
     try 
     {
-      pool.query("SELECT * FROM login", (error, result) => 
-      {
-        if (error) 
-        {
-          res.sendStatus(404);
-        } 
-        else 
-        {
-          const results = 
-          { 
-            results: result ? result.rows : null 
-          };
-          res.send(JSON.stringify(results));
-        }
-      });
-    } 
-    catch (error) 
-    {
-      console.error(error);
-      res.send("Error " + error);
-    }
-  })
-  // For getting all user login informaton
-  .get("/userlogin", async (req, res) => 
-  {
-    try 
-    {
-      pool.query("SELECT * FROM userlogin WHERE userID = " + req.query.userID,
-      (error, result) => 
+      pool.query("SELECT * FROM users", (error, result) => 
       {
         if (error) 
         {
@@ -88,12 +60,12 @@ app
     }
   })
   // For posting all user login information
-  .post("/savelogin", (req, res) => 
+  .post("/saveusers", (req, res) => 
   {
     try 
     {
       pool.query(
-        "DELETE FROM userlogin where userID = " + req.body.userID,
+        "DELETE FROM user where id = " + req.body.id,
         (error, result) => 
         {
           if (error) 
@@ -107,12 +79,12 @@ app
             for (let rowNum in req.body.rows) 
             {
               let row = req.body.rows[rowNum];
-              additionalSQL += "(" + req.body.userID + ", '" + row.firstName + ", '" + row.lastName + ", '" + row.major + ", '" + row.emailAddress + ", '" + row.password + "'),";
+              additionalSQL += "(" + req.body.id + ", '" + row.first_name + ", '" + row.last_name + ", '" + row.major + ", '" + row.email_address + ", '" + row.password + "'),";
             }
 
             additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-            let totalSQL = "INSERT INTO userlogin (userID, firstName, lastName, major, emailAddress, password) VALUES " + additionalSQL;
+            let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
 
             pool.query(totalSQL, (error, result) => 
             {

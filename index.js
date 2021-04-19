@@ -9,12 +9,16 @@ const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
 const { Client } = require("@googlemaps/google-maps-services-js");
+const {GoogleAuth} = require('google-auth-library');
 
 const homepageHelper = require('./homepageHelper')
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-const client = new Client({});
+const auth = new GoogleAuth({
+  scopes: 'https://www.googleapis.com/auth/cloud-platform'
+});
+const client = await auth.getClient();
 
 const pool = new Pool({
   user: process.env.USER,
@@ -114,6 +118,7 @@ app
           res.send(JSON.stringify(output));
         })
         .catch((e) => {
+          console.log('Unable to send directions');
           res.send(JSON.stringify(output));
         });
       // axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`

@@ -70,7 +70,6 @@ app
 
       // If there are more classes today, update the time until the next one
       if (upcomingClasses.length > 0) {
-        endingPoint = upcomingClasses[0]; // Set next class
         let currentTime = new Date()
         currentTime.setHours(currentTime.getHours() - 4);  // Account for UTC offset.
         let nextClassTime = new Date()
@@ -81,6 +80,14 @@ app
         nextClassTime.setSeconds(0);
         let timeDiff = new Date(nextClassTime - currentTime);
         timeUntilNextClass = timeDiff.getHours() + ' Hours, ' + timeDiff.getMinutes() + ' Minutes';
+      }
+
+      if (upcomingClasses.length > 0 && upcomingStops.length > 0) {
+        endingPoint = upcomingClasses[0].time > upcomingStops[0].time ? upcomingStops[0] : upcomingClasses[0];
+      } else if (upcomingClasses.length > 0) {
+        endingPoint = upcomingClasses[0];
+      } else if (upcomingStops.length > 0) {
+        endingPoint = upcomingStops[0];
       }
 
       // Get the current class user is in based on the whole class list and user stop list.

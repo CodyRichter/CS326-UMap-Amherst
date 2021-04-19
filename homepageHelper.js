@@ -150,7 +150,7 @@ module.exports = {
             previousEvent = event;
         }
 
-        return previousEvent;
+        return {previousEvent, combinedEvents};
     }
 
 };

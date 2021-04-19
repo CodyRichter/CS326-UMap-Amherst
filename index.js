@@ -85,7 +85,7 @@ app
 
       // Get the current class user is in based on the whole class list and user stop list.
       startingPoint = homepageHelper.getStartingPointForMap(userClasses, userStops);
-      if (startingPoint.length > 0 && endingPoint.length > 0) {
+      if (startingPoint && endingPoint) {
         
         var config = {
           method: 'get',

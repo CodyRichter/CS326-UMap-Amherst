@@ -133,11 +133,8 @@ app
   })
   // For posting all user login information
   .post("/saveusers", (req, res) => {
-      for (let rowNum in req.body.rows) 
-      {
-          let row = req.body.rows[rowNum];
-          additionalSQL += "(" + req.body.id + ", '" + row.first_name + ", '" + row.last_name + ", '" + row.major + ", '" + row.email_address + ", '" + row.password + "'),";
-      }
+    
+      additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
 
       additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 

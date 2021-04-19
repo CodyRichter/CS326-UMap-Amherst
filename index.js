@@ -151,12 +151,12 @@ app
 
     let totalSQL = "INSERT INTO users (first_name, password) VALUES " + additionalSQL;
 
-    pool.query(totalSQL, (err, result) => 
+    pool.query(totalSQL, (error, result) => 
     {
-      if (err) 
+      if (error) 
       {
-          console.log(err);
-          res.sendStatus(404);
+          console.log(error);
+          res.sendStatus(500);
       }
       else 
       {
@@ -167,18 +167,18 @@ app
   // For posting all user signup information
   .post("/savesignup", (req, res) => {
     
-    additionalSQL += "(" + req.body.firstName + ", '" + req.body.lastName + ", '" + req.body.major + ", '" + req.body.emailAddress + ", '" + req.body.password + "'),";
+    additionalSQL += "(" + req.body.id + ", '" + req.body.first_name + ", '" + req.body.last_name + ", '" + req.body.major + ", '" + req.body.email_address + ", '" + req.body.password + "'),";
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
 
-    pool.query(totalSQL, (err, result) => 
+    pool.query(totalSQL, (error, result) => 
     {
-      if (err) 
+      if (error) 
       {
-          console.log(err);
-          res.sendStatus(404);
+          console.log(error);
+          res.sendStatus(500);
       }
       else 
       {

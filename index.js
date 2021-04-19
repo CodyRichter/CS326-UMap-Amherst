@@ -10,7 +10,6 @@ const { start } = require("repl");
 const passport = require("passport");
 
 const homepageHelper = require('./homepageHelper')
-const client = null;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
@@ -35,9 +34,6 @@ app
   .set("view engine", "ejs")
 
   .get('/home', async (req, res) => {
-    if (client === null) {
-      client = await auth.getClient();
-    }
 
     let userClasses = [];  // All user classes
     let userStops = [];  // All user pitstops

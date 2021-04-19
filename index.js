@@ -8,6 +8,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
+const {GoogleAuth} = require('google-auth-library');
+
 
 const homepageHelper = require('./homepageHelper')
 
@@ -22,6 +24,8 @@ const pool = new Pool({
   ssl: true,
 });
 
+let GOOGLE_API_KEY_INFO = JSON.parse(process.env.GOOGLE_AUTH);
+GoogleAuth.fromJSON(GOOGLE_API_KEY_INFO);
 
 const app = express();
 app.use(cors());
@@ -99,7 +103,7 @@ app
 
     if (startingPoint && endingPoint) {
       
-      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&key=AIzaSyBIiiqLQtli_nFWuPRgsp14kPwav_Iws4I&mode=walking`
+      axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startingPoint.lat},${startingPoint.lng}&destination=${endingPoint.lat},${endingPoint.lng}&mode=walking`
       ).then((res) => {
         output['route'] = res.data;
         res.send(JSON.stringify(output));

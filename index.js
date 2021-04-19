@@ -380,10 +380,12 @@ app.post("/savepitstops", (req, res) => {
             stopDay = dayMap[formattedDate.getDay()];
             stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
 
+            // Add row to SQL to insert
             additionalSQL +=
-              "(" + req.body.userID + ", " + row.id + ", '" + row.time + ", " + stopDay + ", " + stopTime + "'),";
+              `(${req.body.userID}, ${row.id}, '${row.time}', '${stopDay}', '${stopTime}'),`;
           }
 
+          // Remove ending comma
           additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
           let totalSQL =

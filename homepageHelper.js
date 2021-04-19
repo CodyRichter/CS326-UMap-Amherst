@@ -132,7 +132,7 @@ module.exports = {
         }
 
         // Put events in chronological order
-        combinedEvents.sort((a, b) => {
+        combinedEvents = combinedEvents.sort((a, b) => {
             return a.time > b.time;
         });
 

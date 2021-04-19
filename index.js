@@ -350,7 +350,7 @@ app.post("/savepitstops", (req, res) => {
           for (let rowNum in req.body.rows) {
             let row = req.body.rows[rowNum];
             console.log(row.time);
-            let formattedDate = row.time.toString().toString().replaceAll("-", "/");
+            let formattedDate = row.time.toString().replaceAll("-", "/");
             formattedDate = formattedDate.split('+')[0]
             formattedDate = formattedDate.split('.')[0]
 

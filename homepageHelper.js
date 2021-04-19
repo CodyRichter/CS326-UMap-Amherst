@@ -133,7 +133,7 @@ module.exports = {
 
         // Put events in chronological order
         combinedEvents = combinedEvents.sort((a, b) => {
-            return a.time > b.time;
+            return a.time >= b.time ? 1 : -1;
         });
 
         // Get current time in correct format

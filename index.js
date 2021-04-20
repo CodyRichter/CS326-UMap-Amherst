@@ -307,7 +307,7 @@ app
             let obj = req.body.classList[i];
             let monday = obj.days.includes("Mon");
             let tuesday = obj.days.includes("Tues");
-            let wednesday = obj.days.includes("Weds");
+            let wednesday = obj.days.includes("Wed");
             let thursday = obj.days.includes("Thurs");
             let friday = obj.days.includes("Fri");
             additionalSQL += "('" + primaryID + "', '" 

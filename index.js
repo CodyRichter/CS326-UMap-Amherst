@@ -172,29 +172,7 @@ app
 
     let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL + `"`;
 
-    let id = `'${req.body.id}'`;
-    let firstName = `'${req.body.firstName}'`;
-    let lastName = `'${req.body.lastName}'`;
-    let major = `'${req.body.major}'`;
-    let emailAddress = `'${req.body.emailAddress}'`;
-    let password = `'${req.body.password}'`;
-
-    let totalSQL2 = "SELECT * FROM user WHERE id = " + id + " AND first_name = " + firstName + " AND last_name = " + lastName + " AND major = " + major + " AND email_address = " + emailAddress + " AND password = " + password;
-
     pool.query(totalSQL, (error, result) => 
-    {
-      if (error) 
-      {
-          console.log(error);
-          res.sendStatus(404);
-      }
-      else 
-      {
-          res.sendStatus(200);
-      }
-    });
-
-    pool.query(totalSQL2, (error, result) => 
     {
       if (error) 
       {

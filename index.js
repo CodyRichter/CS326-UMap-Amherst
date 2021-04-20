@@ -166,7 +166,7 @@ app
 
     let additionalSQL = "";
     
-    additionalSQL += `(10, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}')`;
+    additionalSQL += `(${req.body.id}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}')`;
 
     let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + additionalSQL + `"`;
 

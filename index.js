@@ -133,7 +133,7 @@ app
       res.send("Error " + err);
     }
   })
-  /*
+  
   // For posting all user login information
   .post("/savelogin", (req, res) => {
     
@@ -156,7 +156,7 @@ app
       }
     });
   })
-  */
+
   // For posting all user signup information
   .post("/savesignup", (req, res) => {
     
@@ -164,7 +164,7 @@ app
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES ('first', 'last', 'cs', 'email', 'password');";
 
     pool.query(totalSQL, (error, result) => 
     {

@@ -277,52 +277,77 @@ app
   })
   .post("/saveclasses", (req, res) => {
     try {
-      pool.query(
-        "DELETE FROM userclasses where userID = " + req.body.userID,
-        (err, result) => {
-          if (err) {
-            res.sendStatus(404);
-          } else {
-            let additionalSQL = "";
-
-            for (let rowNum in req.body.rows) {
-              let row = req.body.rows[rowNum];
-              additionalSQL +=
-                "(" +
-                req.body.userID +
-                ", '" +
-                row.name +
-                ", '" +
-                row.days +
-                ", '" +
-                row.building +
-                ", '" +
-                row.time +
-                ", '" +
-                row.room +
-                "'),";
-            }
-
-            additionalSQL = additionalSQL.substring(
-              0,
-              additionalSQL.length - 1
-            );
-
-            let totalSQL =
-              "INSERT INTO userclasses (userID, name, days, building, time, room) VALUES " +
-              additionalSQL;
-
-            pool.query(totalSQL, (err, result) => {
-              if (err) {
-                console.log(err);
-                res.sendStatus(404);
-              } else {
-                res.sendStatus(200);
-              }
-            });
+      pool.query("SELECT COUNT(*) FROM classes", (err, result) => {
+        if (err) {
+          console.log(err);
+          res.sendStatus(404);
+        } else {
+          let primaryID = parseInt(result.rows[0].count) + 1;
+          let classIDs = [];
+        
+          let additionalSQL = "";
+          for (let i=0; i < req.body.classList.length; i++) {
+            let obj = req.body.classList[i];
+            let monday = obj.days.includes("Mon");
+            let tuesday = obj.days.includes("Tues");
+            let wednesday = obj.days.includes("Weds");
+            let thursday = obj.days.includes("Thurs");
+            let friday = obj.days.includes("Fri");
+            additionalSQL += "('" + primaryID + "', '" 
+            + obj.name + "', '"
+            + obj.building + "', '"
+            + obj.room + "', '"
+            + obj.time + "', '"
+            + monday + "', '"
+            + tuesday + "', '"
+            + wednesday + "', '"
+            + thursday + "', '"
+            + friday + "'),";
+            classIDs.push(primaryID);
+            primaryID++;
           }
+
+          additionalSQL = additionalSQL.substring(0,additionalSQL.length - 1);
+
+          let totalSQL =
+            "INSERT INTO classes (id, name, building, room, time, monday, tuesday, wednesday, thursday, friday) VALUES " +
+            additionalSQL;
+
+          pool.query(totalSQL, (err, result) => {
+            if (err) {
+              console.log(err);
+              res.sendStatus(404);
+            } else {
+              pool.query(
+              "DELETE FROM userclasses where userID = " + req.body.userID,
+                (err, result) => {
+                  let additionalSQL2 = "";
+
+                  for (let i=0; i < req.body.classList.length; i++) {
+                    additionalSQL2 += "(" + req.body.userID +", " + classIDs[i] + "),";
+                  }
+                  
+                  additionalSQL2 = additionalSQL2.substring(0,additionalSQL2.length - 1);
+
+                  let totalSQL2 =
+                    "INSERT INTO userclasses (userID, class) VALUES " +
+                    additionalSQL2;
+
+                    pool.query(totalSQL2, (err, result) => {
+                      if (err) {
+                        console.log(err);
+                        res.sendStatus(404);
+                      } else {
+                        res.sendStatus(200);
+                      }
+                    });
+                }
+              );
+            }
+          });
+         
         }
-      );
+      });
     } catch (err) {
       console.error(err);
       res.send("Error " + err);

@@ -144,24 +144,24 @@ app
   .post("/savelogin", (req, res) => {
 
     let additionalSQL = "";
-    
-    additionalSQL += "('" + req.body.username + "', '" + req.body.password + "'),";
+
+    additionalSQL += `('${req.body.username}', '${req.body.password}'),`;
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
     let totalSQL = "INSERT INTO users (first_name, password) VALUES " + additionalSQL;
 
-    console.log(totalSQL);
-
     pool.query(totalSQL, (error, result) => 
     {
       if (error) 
       {
+          console.log(totalSQL);
           console.log(error);
           res.sendStatus(404);
       }
       else 
-      {
+      { 
+          console.log(totalSQL)
           res.sendStatus(200);
       }
     });
@@ -171,13 +171,11 @@ app
 
     let additionalSQL = "";
     
-    additionalSQL += "(" + req.body.firstName + ", '" + req.body.lastName + ", '" + req.body.major + ", '" + req.body.emailAddress + ", '" + req.body.password + "'),";
+    additionalSQL += `('${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
     let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
-
-    console.log(totalSQL);
 
     pool.query(totalSQL, (error, result) => 
     {

@@ -185,7 +185,7 @@ app
   })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {
-    if (req.query.id) {
+    if (req.query.id && !isNaN(req.query.id)) {
       try {
         pool.query(
           "SELECT * FROM buildings where id = " + req.query.id,
@@ -202,7 +202,7 @@ app
         console.error(err);
         res.send("Error " + err);
       }
-    } else if (req.query.name) {
+    } else if (req.query.name !== "") {
       try {
         pool.query(
           "SELECT * FROM buildings where name = " + req.query.name,
@@ -237,21 +237,25 @@ app
   })
   // For getting all classes information
   .get("/classes", async (req, res) => {
-    try {
-      pool.query(
-        "SELECT * FROM classes where id = " + req.query.id,
-        (err, result) => {
-          if (err) {
-            res.sendStatus(404);
-          } else {
-            const results = { results: result ? result.rows : null };
-            res.send(JSON.stringify(results));
+    if (req.query.id && !isNaN(req.query.id)) {
+      try {
+        pool.query(
+          "SELECT * FROM classes where id = " + req.query.id,
+          (err, result) => {
+            if (err) {
+              res.sendStatus(404);
+            } else {
+              const results = { results: result ? result.rows : null };
+              res.send(JSON.stringify(results));
+            }
           }
-        }
-      );
-    } catch (err) {
-      console.error(err);
-      res.send("Error " + err);
+        );
+      } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+      }
+    } else {
+      res.sendStatus(404);
     }
   })
   //For Getting all selectable classes in adding menu
@@ -272,21 +276,25 @@ app
   })
   // For getting all user classes
   .get("/userclasses", async (req, res) => {
-    try {
-      pool.query(
-        "SELECT * FROM userclasses where userID = " + req.query.userID,
-        (err, result) => {
-          if (err) {
-            res.sendStatus(404);
-          } else {
-            const results = { results: result ? result.rows : null };
-            res.send(JSON.stringify(results));
-          }
+      if (req.query.userID && !isNaN(req.query.userID)) {
+        try {
+          pool.query(
+            "SELECT * FROM userclasses where userID = " + req.query.userID,
+            (err, result) => {
+              if (err) {
+                res.sendStatus(404);
+              } else {
+                const results = { results: result ? result.rows : null };
+                res.send(JSON.stringify(results));
+              }
+            }
+          );
+        } catch (err) {
+          console.error(err);
+          res.send("Error " + err);
         }
-      );
-    } catch (err) {
-      console.error(err);
-      res.send("Error " + err);
+    } else {
+      res.sendStatus(404);
     }
   })
   .post("/saveclasses", (req, res) => {
@@ -296,12 +304,27 @@ app
           console.log(err);
           res.sendStatus(404);
         } else {
+
+          if (!req.body.classList)
+            return res.sendStatus(404);
+
           let primaryID = parseInt(result.rows[0].count) + 1;
           let classIDs = [];
         
           let additionalSQL = "";
           for (let i=0; i < req.body.classList.length; i++) {
             let obj = req.body.classList[i];
+            if (obj.name === "" || 
+                obj.building === "" || 
+                obj.room === "" || 
+                obj.time === "" || 
+                obj.monday === "" || 
+                obj.tuesday === "" || 
+                obj.wednesday === "" || 
+                obj.thursday === "" || 
+                obj.friday === "") {
+                  return res.sendStatus(404);
+                }
             let monday = obj.days.includes("Mon");
             let tuesday = obj.days.includes("Tues");
             let wednesday = obj.days.includes("Weds");

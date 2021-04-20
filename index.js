@@ -166,9 +166,12 @@ app
 
     let additionalSQL = "";
     
-    additionalSQL += `('${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}')`;
+    additionalSQL += `(${req.body.id}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
 
-    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " + additionalSQL;
+    additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
+
+    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + 
+    additionalSQL;
 
     pool.query(totalSQL, (error, result) => 
     {
@@ -327,7 +330,7 @@ app
                 }
             let monday = obj.days.includes("Mon");
             let tuesday = obj.days.includes("Tues");
-            let wednesday = obj.days.includes("Weds");
+            let wednesday = obj.days.includes("Wed");
             let thursday = obj.days.includes("Thurs");
             let friday = obj.days.includes("Fri");
             additionalSQL += "('" + primaryID + "', '" 

@@ -188,7 +188,7 @@ app
   })
   //For Getting all buildings
   .get("/buildings", async (req, res) => {
-    if (req.query.id && !isNaN(req.query.id)) {
+    if (req.query.id) {
       try {
         pool.query(
           "SELECT * FROM buildings where id = " + req.query.id,
@@ -205,7 +205,7 @@ app
         console.error(err);
         res.send("Error " + err);
       }
-    } else if (req.query.name !== "") {
+    } else if (req.query.name) {
       try {
         pool.query(
           "SELECT * FROM buildings where name = " + req.query.name,
@@ -240,7 +240,7 @@ app
   })
   // For getting all classes information
   .get("/classes", async (req, res) => {
-    if (req.query.id && !isNaN(req.query.id)) {
+    if (req.query.id) {
       try {
         pool.query(
           "SELECT * FROM classes where id = " + req.query.id,
@@ -279,7 +279,7 @@ app
   })
   // For getting all user classes
   .get("/userclasses", async (req, res) => {
-      if (req.query.userID && !isNaN(req.query.userID)) {
+      if (req.query.userID) {
         try {
           pool.query(
             "SELECT * FROM userclasses where userID = " + req.query.userID,

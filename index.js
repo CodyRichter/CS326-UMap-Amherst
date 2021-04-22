@@ -166,14 +166,9 @@ app
 
     let additionalSQL = "";
 
-    let id = 10;
+    let id = 9;
 
-    do
-    {
-      additionalSQL += `(${id}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
-      id++;
-    }
-    while(id <= 12);
+    additionalSQL += `(${id++}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 

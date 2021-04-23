@@ -143,10 +143,10 @@ app
   // For posting all user login information
   .post("/savelogin", (req, res) => {
 
-    let username = `'${req.body.username}'`;
+    let emailAddress = `'${req.body.email}'`;
     let password = `'${req.body.password}'`;
 
-    let totalSQL = "SELECT * FROM users WHERE first_name = " + username + " AND password = " + password;
+    let totalSQL = "SELECT * FROM users WHERE email_address = " + emailAddress + " AND password = " + password;
 
     pool.query(totalSQL, (error, result) => 
     {

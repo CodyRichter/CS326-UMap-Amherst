@@ -158,19 +158,19 @@ app
       else 
       { 
           res.sendStatus(200);
-      }
 
-      if (result.length > 1)
-      {
-        res.send("This email address and/or password has already been used.");
-      }
-      else if (result.length === 1)
-      {
-        res.send("This is a valid email address and password.")
-      }
-      else if (result.length === 0)
-      {
-        res.send("This email address and/or password cannot be found in the database.")
+          if (result.length > 1)
+          {
+            res.send("This email address and/or password has already been used.");
+          }
+          else if (result.length === 1)
+          {
+            res.send("This is a valid email address and password.")
+          }
+          else if (result.length === 0)
+          {
+            res.send("This email address and/or password cannot be found in the database.")
+          }
       }
     });
   })

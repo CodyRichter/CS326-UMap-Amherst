@@ -166,9 +166,7 @@ app
 
     let additionalSQL = "";
 
-    let id = 9;
-
-    additionalSQL += `(${id++}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
+    additionalSQL += `(${req.body.id}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 

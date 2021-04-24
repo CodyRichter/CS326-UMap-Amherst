@@ -159,17 +159,6 @@ app
       { 
           res.sendStatus(200);
       }
-
-      if (result.length === 1)
-      {
-        res.send({message: "This is a valid email address and password."});
-        console.log("This is a valid email address and password.");
-      }
-      else
-      {
-        res.send({message: "This email address and/or password cannot be found in the database."});
-        console.log("This email address and/or password cannot be found in the database.");
-      }
     });
   })
   // For posting all user signup information

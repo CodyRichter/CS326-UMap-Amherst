@@ -151,14 +151,14 @@ app
 
     pool.query(totalSQL, (error, result) =>
     {
-      if (error)
+      if (error || result.rows.length === 0)
       {
           console.log(error);
           res.sendStatus(404);
       }
       else
       {
-          res.sendStatus(200);
+          res.send(JSON.stringify(results));
       }
     });
   })

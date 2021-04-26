@@ -158,7 +158,7 @@ app
       }
       else
       {
-          res.send(JSON.stringify({id: result.rows[0].id}));
+          res.send(JSON.stringify(result.rows[0]));
       }
     });
   })

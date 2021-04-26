@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const { start } = require("repl");
 const passport = require("passport");
 
-const homepageHelper = require('./homepageHelper')
+const homepageHelper = require('./homepageHelper');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const pool = new Pool({
@@ -20,6 +20,7 @@ const pool = new Pool({
   port: 5432,
   ssl: true,
 });
+
 
 
 const app = express();
@@ -117,24 +118,24 @@ app
     }
   })
   // For getting all login information
-  .get("/users", async (req, res) => 
+  .get("/users", async (req, res) =>
   {
-    try 
+    try
     {
-      pool.query("SELECT * FROM users", (err, result) => 
+      pool.query("SELECT * FROM users", (err, result) =>
       {
-        if (err) 
+        if (err)
         {
           res.sendStatus(404);
-        } 
-        else 
+        }
+        else
         {
           const results = { results: result ? result.rows : null };
           res.send(JSON.stringify(results));
         }
       });
-    } 
-    catch (err) 
+    }
+    catch (err)
     {
       console.error(err);
       res.send("Error " + err);
@@ -148,15 +149,15 @@ app
 
     let totalSQL = "SELECT * FROM users WHERE email_address = " + emailAddress + " AND password = " + password;
 
-    pool.query(totalSQL, (error, result) => 
+    pool.query(totalSQL, (error, result) =>
     {
-      if (error) 
+      if (error)
       {
           console.log(error);
           res.sendStatus(404);
       }
-      else 
-      { 
+      else
+      {
           res.sendStatus(200);
       }
     });
@@ -170,17 +171,17 @@ app
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " + 
+    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " +
     additionalSQL;
 
-    pool.query(totalSQL, (error, result) => 
+    pool.query(totalSQL, (error, result) =>
     {
-      if (error) 
+      if (error)
       {
           console.log(error);
           res.sendStatus(404);
       }
-      else 
+      else
       {
           res.sendStatus(200);
       }
@@ -313,18 +314,18 @@ app
 
           let primaryID = parseInt(result.rows[0].count) + 1;
           let classIDs = [];
-        
+
           let additionalSQL = "";
           for (let i=0; i < req.body.classList.length; i++) {
             let obj = req.body.classList[i];
-            if (obj.name === "" || 
-                obj.building === "" || 
-                obj.room === "" || 
-                obj.time === "" || 
-                obj.monday === "" || 
-                obj.tuesday === "" || 
-                obj.wednesday === "" || 
-                obj.thursday === "" || 
+            if (obj.name === "" ||
+                obj.building === "" ||
+                obj.room === "" ||
+                obj.time === "" ||
+                obj.monday === "" ||
+                obj.tuesday === "" ||
+                obj.wednesday === "" ||
+                obj.thursday === "" ||
                 obj.friday === "") {
                   return res.sendStatus(404);
                 }
@@ -333,7 +334,7 @@ app
             let wednesday = obj.days.includes("Wed");
             let thursday = obj.days.includes("Thurs");
             let friday = obj.days.includes("Fri");
-            additionalSQL += "('" + primaryID + "', '" 
+            additionalSQL += "('" + primaryID + "', '"
             + obj.name + "', '"
             + obj.building + "', '"
             + obj.room + "', '"
@@ -366,7 +367,7 @@ app
                   for (let i=0; i < req.body.classList.length; i++) {
                     additionalSQL2 += "(" + req.body.userID +", " + classIDs[i] + "),";
                   }
-                  
+
                   additionalSQL2 = additionalSQL2.substring(0,additionalSQL2.length - 1);
 
                   let totalSQL2 =
@@ -385,7 +386,7 @@ app
               );
             }
           });
-         
+
         }
       });
     } catch (err) {
@@ -432,20 +433,25 @@ app
       res.send("Error " + err);
     }
   })
-
-  // /db is a debugging view into the complete order_table database table
-  .get("/db", async (req, res) => {
-    try {
-      const client = await pool.connect();
-      const result = await client.query("SELECT * FROM order_table");
-      const results = { results: result ? result.rows : null };
-      res.render("pages/db", results);
-      client.release();
-    } catch (err) {
-      console.error(err);
-      res.send("Error " + err);
-    }
-  })
+    .get("/userid", async (req, res) => {
+      try {
+        pool.query(
+            "SELECT id FROM users where email_address = '" + req.query.email + "' AND password ='" + req.query.password + "'",
+            (err, result) => {
+              if (err) {
+                res.sendStatus(404);
+              } else {
+                const results = { results: result ? result.rows : null };
+                // console.log(results);
+                res.send(JSON.stringify(results));
+              }
+            }
+        );
+      } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+      }
+    })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 app.post("/savepitstops", (req, res) => {
@@ -474,7 +480,7 @@ app.post("/savepitstops", (req, res) => {
 
             formattedDate.setHours(formattedDate.getHours() - 4);
             stopDay = dayMap[formattedDate.getDay()];
-            stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"  
+            stopTime = formattedDate.getHours()+":"+formattedDate.getMinutes()+":00"
 
             // Add row to SQL to insert
             additionalSQL +=

@@ -453,7 +453,6 @@ app
                 res.sendStatus(404);
               } else {
                 const results = { results: result ? result.rows : null };
-                // console.log(results);
                 res.send(JSON.stringify(results));
               }
             }

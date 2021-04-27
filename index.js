@@ -167,11 +167,11 @@ app
 
     let additionalSQL = "";
 
-    additionalSQL += `(${req.body.id}, '${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
+    additionalSQL += `('${req.body.firstName}', '${req.body.lastName}', '${req.body.major}', '${req.body.emailAddress}', '${req.body.password}'),`;
 
     additionalSQL = additionalSQL.substring(0, additionalSQL.length - 1);
 
-    let totalSQL = "INSERT INTO users (id, first_name, last_name, major, email_address, password) VALUES " +
+    let totalSQL = "INSERT INTO users (first_name, last_name, major, email_address, password) VALUES " +
     additionalSQL;
 
     pool.query(totalSQL, (error, result) =>

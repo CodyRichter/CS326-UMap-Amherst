@@ -6,8 +6,6 @@ const PORT = process.env.PORT || 5000;
 const { Pool } = require("pg");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { start } = require("repl");
-const passport = require("passport");
 
 const homepageHelper = require('./homepageHelper');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -20,8 +18,6 @@ const pool = new Pool({
   port: 5432,
   ssl: true,
 });
-
-
 
 const app = express();
 app.use(cors());
@@ -63,7 +59,6 @@ app
         );
         userStops = result ? result.rows : [];
       } catch (err) { } // Again, no need to handle any errors
-
 
       upcomingClasses = homepageHelper.parseUpcomingClasses(userClasses);
 
